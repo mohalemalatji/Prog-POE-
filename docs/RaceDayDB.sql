@@ -71,3 +71,7 @@ CREATE TABLE RESULT (
     CONSTRAINT FK_Result_Enrolment 
         FOREIGN KEY (EnrolmentID) REFERENCES ENROLMENT(EnrolmentID) ON DELETE CASCADE
 );
+INSERT INTO [USER] (UserID, FirstName, LastName, Email, PasswordHash, Role)
+VALUES 
+    ('U01', 'Sarah', 'Jenkins', 'sarah.j@raceday.co.za', 'hashed123', 'Organiser'),
+    ('U02', 'David', 'Naidoo', 'david.n@raceday.co.za', 'hashed456', 'Organiser');
