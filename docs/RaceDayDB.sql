@@ -48,3 +48,16 @@ CREATE TABLE EVENTCATEGORY (
     CONSTRAINT FK_EventCategory_Category 
         FOREIGN KEY (CategoryID) REFERENCES CATEGORY(CategoryID) ON DELETE CASCADE
 );
+CREATE TABLE ENROLMENT (
+    EnrolmentID VARCHAR(50) PRIMARY KEY,
+    ParticipantID VARCHAR(50) NOT NULL,
+    EventCategoryID VARCHAR(50) NOT NULL,
+    EnrolmentDate DATETIME NOT NULL DEFAULT GETDATE(),
+    Status VARCHAR(50) NOT NULL DEFAULT 'Registered',
+
+    CONSTRAINT FK_Enrolment_Participant 
+        FOREIGN KEY (ParticipantID) REFERENCES [USER](UserID),
+
+    CONSTRAINT FK_Enrolment_EventCategory 
+        FOREIGN KEY (EventCategoryID) REFERENCES EVENTCATEGORY(EventCategoryID)
+);
