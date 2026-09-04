@@ -61,3 +61,13 @@ CREATE TABLE ENROLMENT (
     CONSTRAINT FK_Enrolment_EventCategory 
         FOREIGN KEY (EventCategoryID) REFERENCES EVENTCATEGORY(EventCategoryID)
 );
+CREATE TABLE RESULT (
+    ResultID VARCHAR(50) PRIMARY KEY,
+    EnrolmentID VARCHAR(50) NOT NULL UNIQUE,
+    FinishTime TIME NULL,
+    Position INT NULL,
+    ResultStatus VARCHAR(50) NOT NULL DEFAULT 'Completed',
+
+    CONSTRAINT FK_Result_Enrolment 
+        FOREIGN KEY (EnrolmentID) REFERENCES ENROLMENT(EnrolmentID) ON DELETE CASCADE
+);
