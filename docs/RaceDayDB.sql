@@ -18,3 +18,15 @@ CREATE TABLE [USER] (
     PasswordHash VARCHAR(255) NOT NULL,
     Role VARCHAR(20) NOT NULL CHECK (Role IN ('Organiser', 'Participant'))
 );
+CREATE TABLE EVENT (
+    EventID VARCHAR(50) PRIMARY KEY,
+    OrganiserID VARCHAR(50) NOT NULL,
+    EventName VARCHAR(200) NOT NULL,
+    Description VARCHAR(MAX),
+    EventDate DATE NOT NULL,
+    Location VARCHAR(200) NOT NULL,
+    Status VARCHAR(50) NOT NULL DEFAULT 'Upcoming',
+
+    CONSTRAINT FK_Event_Organiser 
+        FOREIGN KEY (OrganiserID) REFERENCES [USER](UserID)
+);
