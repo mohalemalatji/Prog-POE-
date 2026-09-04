@@ -1,0 +1,35 @@
+name: CI Structure Check
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  validate-structure:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check for docs folder
+        run: |
+          if [ -d "docs" ]; then
+            echo "SUCCESS: /docs folder exists."
+          else
+            echo "ERROR: /docs folder is missing!"
+            exit 1
+          fi
+
+      - name: Check for required files
+        run: |
+          files=("docs/RaceDayDB.sql" "docs/API_Endpoint_Plan.md" "docs/ERD.png")
+          for file in "${files[@]}"; do
+            if [ -f "$file" ]; then
+              echo "SUCCESS: $file found."
+            else
+              echo "ERROR: $file is missing from /docs folder!"
+              exit 1
+            fi
+          done
