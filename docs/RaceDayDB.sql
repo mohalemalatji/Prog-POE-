@@ -75,3 +75,5 @@ INSERT INTO [USER] (UserID, FirstName, LastName, Email, PasswordHash, Role)
 VALUES 
     ('U01', 'Sarah', 'Jenkins', 'sarah.j@raceday.co.za', 'hashed123', 'Organiser'),
     ('U02', 'David', 'Naidoo', 'david.n@raceday.co.za', 'hashed456', 'Organiser');
+('U03', 'Mike', 'Ross', 'mike.r@gmail.com', 'hashed789', 'Participant'),
+    ('U04', 'Rachel', 'Zane', 'rachel.z@gmail.com', 'hashed012', 'Participant');
