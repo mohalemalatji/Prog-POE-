@@ -17,3 +17,5 @@ Want to get the database up and running on your own machine? Just follow these q
 3. Log in to a clean, empty instance of your local SQL Server.
 4. Open the `docs/RaceDayDB.sql` file inside SSMS.
 5. Hit the **Execute** button. This will automatically build the `RaceDayDB` database, set up all the required tables, and load in some sample data for you to test with!
+
+https://youtu.be/2b8iJRbW2s4
