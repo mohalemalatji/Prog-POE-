@@ -82,3 +82,8 @@ VALUES
     ('E01', 'U01', 'Comrades Marathon', 'Annual ultra marathon', '2024-06-09', 'Durban', 'Upcoming'),
     ('E02', 'U01', 'Cape Town Cycle Tour', 'Scenic cycling event', '2024-03-10', 'Cape Town', 'Completed'),
     ('E03', 'U02', 'Soweto Marathon', 'Road running event', '2024-11-03', 'Johannesburg', 'Upcoming');
+INSERT INTO CATEGORY (CategoryID, CategoryName, Description)
+VALUES 
+    ('C01', 'Ultra Marathon', '90km running race'),
+    ('C02', '109km Cycling', 'Standard cycling race'),
+    ('C03', 'Half Marathon', '21.1km running race');
