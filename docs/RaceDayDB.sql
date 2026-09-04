@@ -77,3 +77,8 @@ VALUES
     ('U02', 'David', 'Naidoo', 'david.n@raceday.co.za', 'hashed456', 'Organiser');
 ('U03', 'Mike', 'Ross', 'mike.r@gmail.com', 'hashed789', 'Participant'),
     ('U04', 'Rachel', 'Zane', 'rachel.z@gmail.com', 'hashed012', 'Participant');
+INSERT INTO EVENT (EventID, OrganiserID, EventName, Description, EventDate, Location, Status)
+VALUES 
+    ('E01', 'U01', 'Comrades Marathon', 'Annual ultra marathon', '2024-06-09', 'Durban', 'Upcoming'),
+    ('E02', 'U01', 'Cape Town Cycle Tour', 'Scenic cycling event', '2024-03-10', 'Cape Town', 'Completed'),
+    ('E03', 'U02', 'Soweto Marathon', 'Road running event', '2024-11-03', 'Johannesburg', 'Upcoming');
