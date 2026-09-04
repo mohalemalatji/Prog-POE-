@@ -87,3 +87,8 @@ VALUES
     ('C01', 'Ultra Marathon', '90km running race'),
     ('C02', '109km Cycling', 'Standard cycling race'),
     ('C03', 'Half Marathon', '21.1km running race');
+INSERT INTO EVENTCATEGORY (EventCategoryID, EventID, CategoryID, EntryFee, MaxParticipants)
+VALUES 
+    ('EC01', 'E01', 'C01', 1200.00, 20000),
+    ('EC02', 'E02', 'C02', 850.00, 35000),
+    ('EC03', 'E03', 'C03', 450.00, 10000);
