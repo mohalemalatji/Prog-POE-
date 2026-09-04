@@ -92,3 +92,7 @@ VALUES
     ('EC01', 'E01', 'C01', 1200.00, 20000),
     ('EC02', 'E02', 'C02', 850.00, 35000),
     ('EC03', 'E03', 'C03', 450.00, 10000);
+INSERT INTO ENROLMENT (EnrolmentID, ParticipantID, EventCategoryID, EnrolmentDate, Status)
+VALUES 
+    ('EN01', 'U03', 'EC01', '2024-01-15 08:30:00', 'Registered'),
+    ('EN02', 'U04', 'EC02', '2023-11-20 14:15:00', 'Completed');
