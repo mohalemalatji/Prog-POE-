@@ -96,3 +96,8 @@ INSERT INTO ENROLMENT (EnrolmentID, ParticipantID, EventCategoryID, EnrolmentDat
 VALUES 
     ('EN01', 'U03', 'EC01', '2024-01-15 08:30:00', 'Registered'),
     ('EN02', 'U04', 'EC02', '2023-11-20 14:15:00', 'Completed');
+INSERT INTO RESULT (ResultID, EnrolmentID, FinishTime, Position, ResultStatus)
+VALUES 
+    ('R01', 'EN02', '03:15:42', 154, 'Finished');
+
+GO
