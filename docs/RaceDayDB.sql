@@ -30,3 +30,8 @@ CREATE TABLE EVENT (
     CONSTRAINT FK_Event_Organiser 
         FOREIGN KEY (OrganiserID) REFERENCES [USER](UserID)
 );
+CREATE TABLE CATEGORY (
+    CategoryID VARCHAR(50) PRIMARY KEY,
+    CategoryName VARCHAR(100) NOT NULL UNIQUE,
+    Description VARCHAR(MAX)
+);
