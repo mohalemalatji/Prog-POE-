@@ -15,10 +15,11 @@ This document outlines the RESTful API endpoints for the RaceDay system. It enfo
 | POST | `/api/categories` | Creates a new category type (e.g., Ultra Marathon, 10km Run). | Organiser | `{ "CategoryName": "", "Description": "" }` | **201 Created**: Category added successfully.<br>**403 Forbidden**: Not an organiser. |
 | **EVENTS** | | | | | |
 | GET | `/api/events` | Retrieves a list of all upcoming events. | Any (Logged in) | None | **200 OK**: JSON array of events. |
-| POST | `/api/events` | Creates a new event. | Organiser | `{ "EventName": "", "Description": "", "EventDate": "", "Location": "" }` | **201 Created**: Event created successfully.<br>**403 Forbidden**: Access denied. |
-| PUT | `/api/events/{id}` | Edits an existing event's details. | Organiser | `{ "EventName": "", "EventDate": "", "Location": "", "Status": "" }` | **200 OK**: Event updated.<br>**404 Not Found**: Event ID does not exist. |
+| POST | `/api/events` | Creates a new event. | Organiser | `{ "EventName": "", "Description": "", "EventDate": "", "Location": "", "DistanceKm": 10, "EventType": "Run" }` | **201 Created**: Event created successfully.<br>**403 Forbidden**: Access denied. |
+| PUT | `/api/events/{id}` | Edits an existing event's details. | Organiser | `{ "EventName": "", "EventDate": "", "Location": "", "DistanceKm": 10, "EventType": "Run", "Status": "" }` | **200 OK**: Event updated.<br>**404 Not Found**: Event ID does not exist. |
 | DELETE | `/api/events/{id}` | Deletes an event. | Organiser | None | **204 No Content**: Event deleted successfully. |
 | POST | `/api/events/{id}/categories` | Links a category to an event with specific fees and capacities. | Organiser | `{ "CategoryID": "", "EntryFee": 0.00, "MaxParticipants": 100 }` | **201 Created**: Category added to event. |
+| GET | `/api/events/{id}/enrolments` | Views all participants enrolled in an organiser's event. | Organiser | None | **200 OK**: Enrolment list.<br>**403 Forbidden**: Event belongs to another organiser. |
 | **EVENT ENROLMENTS** | | | | | |
 | POST | `/api/event-categories/{id}/enrol` | Enters a participant into a specific event category. | Participant | None (Uses token for UserID) | **201 Created**: Enrolment successful.<br>**409 Conflict**: Already enrolled / Event full. |
 | GET | `/api/enrolments/my-enrolments` | Views a list of the logged-in participant's enrolments. | Participant | None | **200 OK**: JSON array of enrolments. |

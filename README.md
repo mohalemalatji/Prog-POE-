@@ -1,21 +1,50 @@
-# Welcome to RaceDay! 
+# RaceDay — Part 1 and Part 2
 
-## What is RaceDay?
-RaceDay is a web application built specifically for the South African running, walking, and cycling community. We created this platform to step away from the hassle of old-school paper registrations and scattered communication. Instead, RaceDay provides a single, easy-to-use hub for organizing and joining local sporting events.
+RaceDay is a local event management system for South African running, walking, and cycling events. Part 1 provides the database. Part 2 adds an ASP.NET Core REST API that uses the same local SQL Server database. The MVC user interface is planned for Part 3; Swagger is the development page used to inspect and test the API.
 
-## Who uses this platform?
-The system is designed for two main types of users, each with their own specific permissions:
+## Part 1 — Database
 
-*   **The Organisers:** These are the people behind the scenes. They can easily create and update events, set up different race categories, capture finish times, and keep track of everyone who has registered for their races.
-*   **The Participants:** The athletes! Participants can create an account, browse through upcoming races, pick a category to enter, and keep track of their personal race history and results all in one place.
+For a fresh database setup:
 
-## Getting Started (Part 1 - Database Setup)
-Want to get the database up and running on your own machine? Just follow these quick steps:
+1. Clone this repository.
+2. Open SQL Server Management Studio and connect to a local SQL Server instance.
+3. Open docs/RaceDayDB.sql and execute it.
 
-1. Clone this repository to your local computer.
-2. Open **SQL Server Management Studio (SSMS)**.
-3. Log in to a clean, empty instance of your local SQL Server.
-4. Open the `docs/RaceDayDB.sql` file inside SSMS.
-5. Hit the **Execute** button. This will automatically build the `RaceDayDB` database, set up all the required tables, and load in some sample data for you to test with!
+The script drops and recreates the RaceDay tables, so use it only for a fresh setup. Keep a copy of any existing data first.
 
-https://youtu.be/2b8iJRbW2s4
+Part 1 demonstration: https://youtu.be/2b8iJRbW2s4
+
+## Part 2 — REST API
+
+The API uses the Part 1 RaceDayDB tables on local SQL Server LocalDB. Its EF Core migrations preserve the existing tables and apply the Part 2 schema updates.
+
+### Run locally
+
+Requirements: Visual Studio with the .NET 10 SDK and SQL Server LocalDB.
+
+1. Open RaceDay.sln in Visual Studio.
+2. Set RaceDay.Api as the startup project and select the http launch profile.
+3. For a new development setup, right-click RaceDay.Api, select Manage User Secrets, and add Jwt:Key with a value of at least 32 characters. Keep this key out of source control.
+4. Press Run. In Development, the API applies EF Core migrations to the local database and opens Swagger at http://localhost:5161/swagger.
+
+Swagger is for testing the API during development; it is not the RaceDay website.
+
+### Roles and features
+
+- Organiser: create and manage events and categories, link categories to events, view event enrolments, and record results.
+- Participant: browse events and categories, enrol in an event category, and view personal enrolments and results.
+- Both roles can register, log in, and view or update their own profile. Passwords are hashed, and login returns a JWT for protected requests.
+
+The endpoint list and request examples are in the API endpoint plan (docs/API_Endpoint_Plan.md).
+
+### Tests and continuous integration
+
+The test project uses an isolated in-memory database and does not change the local RaceDayDB. In Visual Studio, open Test → Test Explorer and choose Run All. The current local run passed all three API tests.
+
+GitHub Actions restores, builds, and tests the API on pushes and pull requests to main and part-2.
+
+## Part 2 submission evidence
+
+- Add a screenshot of a successful Part 2 API CI run after the workflow completes.
+- Add the unlisted YouTube demonstration link after recording the Part 2 walkthrough.
+- Submit this repository link on ARC.
