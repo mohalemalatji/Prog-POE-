@@ -1,0 +1,7 @@
+**/bin/
+**/obj/
+.vs/
+.nuget-home/
+*.user
+*.suo
+TestResults/
