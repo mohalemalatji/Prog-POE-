@@ -1,9 +1,13 @@
 namespace RaceDay.Api.Models;
 
-public sealed class Category
+public sealed class EventCategory
 {
-    public string CategoryID { get; set; } = Guid.NewGuid().ToString("D");
-    public string CategoryName { get; set; } = "";
-    public string? Description { get; set; }
-    public ICollection<EventCategory> EventCategories { get; set; } = new List<EventCategory>();
+    public string EventCategoryID { get; set; } = Guid.NewGuid().ToString("D");
+    public string EventID { get; set; } = "";
+    public string CategoryID { get; set; } = "";
+    public decimal EntryFee { get; set; }
+    public int MaxParticipants { get; set; }
+    public Event? Event { get; set; }
+    public Category? Category { get; set; }
+    public ICollection<Enrolment> Enrolments { get; set; } = new List<Enrolment>();
 }
