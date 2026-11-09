@@ -14,8 +14,6 @@ public sealed class EnrolmentsController(RaceDayDbContext db) : ControllerBase
 {
     [Authorize(Roles = "Participant")]
     [HttpPost("event-categories/{id}/enrol")]
-    [EndpointSummary("Enrol in an event category")]
-    [EndpointDescription("Enrols the authenticated participant in an event category, subject to its capacity.")]
     public async Task<ActionResult<EnrolmentResponse>> Enrol(string id)
     {
         await using var transaction = await db.Database.BeginTransactionAsync(IsolationLevel.Serializable);
@@ -36,8 +34,6 @@ public sealed class EnrolmentsController(RaceDayDbContext db) : ControllerBase
 
     [Authorize(Roles = "Participant")]
     [HttpGet("enrolments/my-enrolments")]
-    [EndpointSummary("List my enrolments")]
-    [EndpointDescription("Returns the authenticated participant's event enrolments.")]
     public async Task<ActionResult<IEnumerable<EnrolmentResponse>>> GetMine()
     {
         var participantId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
@@ -51,8 +47,6 @@ public sealed class EnrolmentsController(RaceDayDbContext db) : ControllerBase
 
     [Authorize(Roles = "Participant")]
     [HttpGet("results/my-results")]
-    [EndpointSummary("List my results")]
-    [EndpointDescription("Returns results recorded for the authenticated participant.")]
     public async Task<ActionResult<IEnumerable<EnrolmentResponse>>> GetMyResults()
     {
         var participantId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
@@ -66,8 +60,6 @@ public sealed class EnrolmentsController(RaceDayDbContext db) : ControllerBase
 
     [Authorize(Roles = "Organiser")]
     [HttpPost("enrolments/{id}/result")]
-    [EndpointSummary("Record an enrolment result")]
-    [EndpointDescription("Records the result for an enrolment belonging to the authenticated organiser's event.")]
     public async Task<IActionResult> SaveResult(string id, ResultRequest request)
     {
         var enrolment = await db.Enrolments.Include(x => x.EventCategory).ThenInclude(x => x!.Event)
@@ -85,7 +77,6 @@ public sealed class EnrolmentsController(RaceDayDbContext db) : ControllerBase
     private Task<Enrolment?> LoadEnrolment(string id) => db.Enrolments.Include(x => x.Participant).Include(x => x.Result)
         .Include(x => x.EventCategory).ThenInclude(x => x!.Category)
         .Include(x => x.EventCategory).ThenInclude(x => x!.Event).SingleOrDefaultAsync(x => x.EnrolmentID == id);
-
 
 
     internal static EnrolmentResponse ToResponse(Enrolment x) => new(x.EnrolmentID, x.EventCategory!.EventID,

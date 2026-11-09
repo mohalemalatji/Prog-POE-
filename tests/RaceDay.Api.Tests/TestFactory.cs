@@ -8,7 +8,6 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using RaceDay.Api.Data;
 
@@ -21,18 +20,6 @@ public sealed class TestFactory : WebApplicationFactory<Program>
     private const string TestJwtAudience = "RaceDay.Client";
     private readonly string _databaseName = Guid.NewGuid().ToString("N");
 
-    protected override IHost CreateHost(IHostBuilder builder)
-    {
-        builder.ConfigureHostConfiguration(config => config.AddInMemoryCollection(new Dictionary<string, string?>
-        {
-            ["Jwt:Key"] = TestJwtKey,
-            ["Jwt:Issuer"] = TestJwtIssuer,
-            ["Jwt:Audience"] = TestJwtAudience,
-            ["Database:ApplyMigrationsOnStartup"] = "false"
-        }));
-
-        return base.CreateHost(builder);
-    }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -61,4 +48,3 @@ public sealed class TestFactory : WebApplicationFactory<Program>
         });
     }
 }
-

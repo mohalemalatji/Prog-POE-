@@ -18,8 +18,6 @@ public sealed class AuthController(RaceDayDbContext db, IPasswordHasher<User> ha
 {
     [AllowAnonymous]
     [HttpPost("register")]
-    [EndpointSummary("Register a user account")]
-    [EndpointDescription("Creates an organiser or participant account and returns the new user's profile.")]
     public async Task<ActionResult<UserResponse>> Register(RegisterRequest request)
     {
         var email = request.Email.Trim().ToLowerInvariant();
@@ -29,14 +27,12 @@ public sealed class AuthController(RaceDayDbContext db, IPasswordHasher<User> ha
         db.Users.Add(user);
         try { await db.SaveChangesAsync(); }
         catch (DbUpdateException) { return Conflict(new { message = "An account with this email already exists." }); }
-        return StatusCode(StatusCodes.Status201Created, new UserResponse(user.UserID, user.FirstName, user.LastName, user.Email, user.Role));
+        return StatusCode(StatusCodes.Status201Created, ToResponse(user));
     }
 
 
     [AllowAnonymous]
     [HttpPost("login")]
-    [EndpointSummary("Log in")]
-    [EndpointDescription("Checks the user's credentials and returns a JWT access token.")]
     public async Task<ActionResult<AuthResponse>> Login(LoginRequest request)
     {
         var user = await db.Users.SingleOrDefaultAsync(u => u.Email == request.Email.Trim().ToLowerInvariant());
@@ -57,5 +53,11 @@ public sealed class AuthController(RaceDayDbContext db, IPasswordHasher<User> ha
     }
 
 
-    private static UserResponse ToResponse(User user) => new(user.UserID, user.FirstName, user.LastName, user.Email, user.Role);
+    private UserResponse ToResponse(User user)
+    {
+        var pictureUrl = string.IsNullOrWhiteSpace(user.ProfilePictureBlobName)
+            ? null
+            : $"{Request.Scheme}://{Request.Host}/api/images/profile-pictures/{Uri.EscapeDataString(user.ProfilePictureBlobName)}";
+        return new UserResponse(user.UserID, user.FirstName, user.LastName, user.Email, user.Role, pictureUrl);
+    }
 }

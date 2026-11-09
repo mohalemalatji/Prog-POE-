@@ -11,15 +11,12 @@ namespace RaceDay.Api.Controllers;
 public sealed class CategoriesController(RaceDayDbContext db) : ControllerBase
 {
     [HttpGet]
-    [EndpointSummary("List categories")]
-    [EndpointDescription("Returns all available event categories.")]
     public async Task<ActionResult<IEnumerable<CategoryResponse>>> GetAll() =>
         Ok(await db.Categories.OrderBy(c => c.CategoryName).Select(c => new CategoryResponse(c.CategoryID, c.CategoryName, c.Description)).ToListAsync());
 
+
     [Authorize(Roles = "Organiser")]
     [HttpPost]
-    [EndpointSummary("Create a category")]
-    [EndpointDescription("Creates a category for organisers to add to their events.")]
     public async Task<ActionResult<CategoryResponse>> Create(CategoryRequest request)
     {
         if (await db.Categories.AnyAsync(c => c.CategoryName == request.CategoryName.Trim())) return Conflict(new { message = "That category already exists." });

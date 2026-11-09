@@ -8,6 +8,7 @@ public sealed class User
     public string Email { get; set; } = "";
     public string PasswordHash { get; set; } = "";
     public string Role { get; set; } = "Participant";
+    public string? ProfilePictureBlobName { get; set; }
     public ICollection<Event> Events { get; set; } = new List<Event>();
     public ICollection<Enrolment> Enrolments { get; set; } = new List<Enrolment>();
 }
@@ -23,6 +24,7 @@ public sealed class Event
     public decimal DistanceKm { get; set; }
     public string EventType { get; set; } = "Run";
     public string Status { get; set; } = "Upcoming";
+    public string? BannerBlobName { get; set; }
     public User? Organiser { get; set; }
     public ICollection<EventCategory> EventCategories { get; set; } = new List<EventCategory>();
 }
@@ -68,3 +70,12 @@ public sealed class Result
     public string ResultStatus { get; set; } = "Completed";
     public Enrolment? Enrolment { get; set; }
 }
+
+public sealed class ImageAsset
+{
+    public string ImageKey { get; set; } = "";
+    public string ContainerName { get; set; } = "";
+    public string ContentType { get; set; } = "";
+    public byte[] Data { get; set; } = [];
+}
+

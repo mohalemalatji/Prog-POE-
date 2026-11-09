@@ -5,18 +5,23 @@ using Microsoft.EntityFrameworkCore;
 using RaceDay.Api.Contracts;
 using RaceDay.Api.Data;
 using RaceDay.Api.Models;
+using RaceDay.Api.Services;
 
 namespace RaceDay.Api.Controllers;
 
 [ApiController, Authorize, Route("api/events")]
-public sealed class EventsController(RaceDayDbContext db) : ControllerBase
+public sealed class EventsController(RaceDayDbContext db, SqlImageStorage storage) : ControllerBase
 {
     [HttpGet]
-    [EndpointSummary("List upcoming events")]
-    [EndpointDescription("Returns upcoming events with their categories, entry fees, capacities, and enrolment counts.")]
     public async Task<ActionResult<IEnumerable<EventResponse>>> GetAll()
     {
-        var events = await db.Events.Where(e => e.Status == "Upcoming" && e.EventDate >= DateOnly.FromDateTime(DateTime.UtcNow))
+        var query = db.Events.AsQueryable();
+        if (User.IsInRole("Organiser"))
+            query = query.Where(e => e.OrganiserID == ActorId());
+        else
+            query = query.Where(e => e.Status == "Upcoming" && e.EventDate >= DateOnly.FromDateTime(DateTime.UtcNow));
+
+        var events = await query
             .Include(e => e.EventCategories).ThenInclude(ec => ec.Category)
             .Include(e => e.EventCategories).ThenInclude(ec => ec.Enrolments)
             .OrderBy(e => e.EventDate).ToListAsync();
@@ -26,8 +31,6 @@ public sealed class EventsController(RaceDayDbContext db) : ControllerBase
 
     [Authorize(Roles = "Organiser")]
     [HttpPost]
-    [EndpointSummary("Create an event")]
-    [EndpointDescription("Creates an event owned by the authenticated organiser.")]
     public async Task<ActionResult<EventResponse>> Create(EventCreateRequest request)
     {
         var item = new Event
@@ -43,8 +46,6 @@ public sealed class EventsController(RaceDayDbContext db) : ControllerBase
 
     [Authorize(Roles = "Organiser")]
     [HttpPut("{id}")]
-    [EndpointSummary("Update an event")]
-    [EndpointDescription("Updates an event owned by the authenticated organiser.")]
     public async Task<IActionResult> Update(string id, EventUpdateRequest request)
     {
         var item = await db.Events.FindAsync(id);
@@ -57,23 +58,40 @@ public sealed class EventsController(RaceDayDbContext db) : ControllerBase
 
 
     [Authorize(Roles = "Organiser")]
+    [HttpPost("{id}/banner"), Consumes("multipart/form-data"), RequestSizeLimit(5 * 1024 * 1024 + 64 * 1024)]
+    public async Task<ActionResult<EventResponse>> UploadBanner(string id, IFormFile? file, CancellationToken cancellationToken)
+    {
+        if (!await SqlImageStorage.IsSupportedImageAsync(file, cancellationToken))
+            return BadRequest(new { message = "Choose a JPEG, PNG, or WebP image up to 5 MB." });
+
+        var item = await db.Events.FindAsync(id);
+        if (item is null) return NotFound();
+        if (item.OrganiserID != ActorId()) return Forbid();
+
+        var oldBlobName = item.BannerBlobName;
+        item.BannerBlobName = await storage.UploadAsync(file!, "event-banners", cancellationToken);
+        await db.SaveChangesAsync();
+        await storage.DeleteIfExistsAsync("event-banners", oldBlobName, cancellationToken);
+        return Ok(ToResponse(await LoadEvent(id) ?? item));
+    }
+
+
+    [Authorize(Roles = "Organiser")]
     [HttpDelete("{id}")]
-    [EndpointSummary("Delete an event")]
-    [EndpointDescription("Deletes an event owned by the authenticated organiser when it has no enrolments.")]
     public async Task<IActionResult> Delete(string id)
     {
         var item = await db.Events.FindAsync(id);
         if (item is null) return NotFound();
         if (item.OrganiserID != ActorId()) return Forbid();
         if (await db.Enrolments.AnyAsync(x => x.EventCategory!.EventID == id)) return Conflict(new { message = "An event with enrolments cannot be deleted." });
-        db.Events.Remove(item); await db.SaveChangesAsync(); return NoContent();
+        db.Events.Remove(item); await db.SaveChangesAsync();
+        await storage.DeleteIfExistsAsync("event-banners", item.BannerBlobName, HttpContext.RequestAborted);
+        return NoContent();
     }
 
 
     [Authorize(Roles = "Organiser")]
     [HttpPost("{id}/categories")]
-    [EndpointSummary("Add a category to an event")]
-    [EndpointDescription("Links a category to the organiser's event with an entry fee and participant capacity.")]
     public async Task<ActionResult<EventCategoryResponse>> AddCategory(string id, EventCategoryRequest request)
     {
         var item = await db.Events.FindAsync(id);
@@ -90,8 +108,6 @@ public sealed class EventsController(RaceDayDbContext db) : ControllerBase
 
     [Authorize(Roles = "Organiser")]
     [HttpGet("{id}/enrolments")]
-    [EndpointSummary("List event enrolments")]
-    [EndpointDescription("Returns participant enrolments and results for an event owned by the authenticated organiser.")]
     public async Task<ActionResult<IEnumerable<EnrolmentResponse>>> GetEventEnrolments(string id)
     {
         var item = await db.Events.FindAsync(id);
@@ -112,8 +128,13 @@ public sealed class EventsController(RaceDayDbContext db) : ControllerBase
         .Include(e => e.EventCategories).ThenInclude(ec => ec.Enrolments).SingleOrDefaultAsync(e => e.EventID == id);
 
 
-
-    private static EventResponse ToResponse(Event e) => new(e.EventID, e.EventName, e.Description, e.EventDate, e.Location, e.DistanceKm,
-        e.EventType, e.Status, e.OrganiserID, e.EventCategories.Select(ec => new EventCategoryResponse(ec.EventCategoryID, ec.CategoryID,
-            ec.Category?.CategoryName ?? "", ec.EntryFee, ec.MaxParticipants, ec.Enrolments.Count)).ToList());
+    private EventResponse ToResponse(Event e)
+    {
+        var bannerUrl = string.IsNullOrWhiteSpace(e.BannerBlobName)
+            ? null
+            : $"{Request.Scheme}://{Request.Host}/api/images/event-banners/{Uri.EscapeDataString(e.BannerBlobName)}";
+        return new EventResponse(e.EventID, e.EventName, e.Description, e.EventDate, e.Location, e.DistanceKm,
+            e.EventType, e.Status, e.OrganiserID, e.EventCategories.Select(ec => new EventCategoryResponse(ec.EventCategoryID, ec.CategoryID,
+                ec.Category?.CategoryName ?? "", ec.EntryFee, ec.MaxParticipants, ec.Enrolments.Count)).ToList(), bannerUrl);
+    }
 }

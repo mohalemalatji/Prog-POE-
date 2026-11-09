@@ -85,7 +85,6 @@ public sealed class ApiSmokeTests
         client.PostAsJsonAsync("/api/auth/register", new { firstName = "Test", lastName = "User", email, password = "RaceDay!2026", role });
 
 
-
     private static async Task<string> Login(HttpClient client, string email)
     {
         var response = await client.PostAsJsonAsync("/api/auth/login", new { email, password = "RaceDay!2026" });

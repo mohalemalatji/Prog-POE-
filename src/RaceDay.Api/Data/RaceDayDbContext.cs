@@ -11,6 +11,8 @@ public sealed class RaceDayDbContext(DbContextOptions<RaceDayDbContext> options)
     public DbSet<EventCategory> EventCategories => Set<EventCategory>();
     public DbSet<Enrolment> Enrolments => Set<Enrolment>();
     public DbSet<Result> Results => Set<Result>();
+    public DbSet<ImageAsset> ImageAssets => Set<ImageAsset>();
+
 
     protected override void OnModelCreating(ModelBuilder model)
     {
@@ -20,6 +22,7 @@ public sealed class RaceDayDbContext(DbContextOptions<RaceDayDbContext> options)
             e.Property(x => x.FirstName).HasMaxLength(100).IsUnicode(false).IsRequired(); e.Property(x => x.LastName).HasMaxLength(100).IsUnicode(false).IsRequired();
             e.Property(x => x.Email).HasMaxLength(255).IsUnicode(false).IsRequired(); e.HasIndex(x => x.Email).IsUnique();
             e.Property(x => x.PasswordHash).HasMaxLength(255).IsUnicode(false).IsRequired(); e.Property(x => x.Role).HasMaxLength(20).IsUnicode(false).IsRequired();
+            e.Property(x => x.ProfilePictureBlobName).HasMaxLength(100).IsUnicode(false);
         });
         model.Entity<Event>(e =>
         {
@@ -27,6 +30,7 @@ public sealed class RaceDayDbContext(DbContextOptions<RaceDayDbContext> options)
             e.Property(x => x.EventName).HasMaxLength(200).IsUnicode(false).IsRequired(); e.Property(x => x.Description).HasColumnType("varchar(max)");
             e.Property(x => x.Location).HasMaxLength(200).IsUnicode(false).IsRequired(); e.Property(x => x.Status).HasMaxLength(50).IsUnicode(false).HasDefaultValue("Upcoming");
             e.Property(x => x.EventType).HasMaxLength(20).IsUnicode(false).IsRequired(); e.Property(x => x.DistanceKm).HasPrecision(8, 2);
+            e.Property(x => x.BannerBlobName).HasMaxLength(100).IsUnicode(false);
             e.HasOne(x => x.Organiser).WithMany(x => x.Events).HasForeignKey(x => x.OrganiserID).OnDelete(DeleteBehavior.Restrict);
         });
         model.Entity<Category>(e =>
@@ -58,6 +62,13 @@ public sealed class RaceDayDbContext(DbContextOptions<RaceDayDbContext> options)
             e.Property(x => x.EnrolmentID).HasMaxLength(50).IsUnicode(false); e.Property(x => x.ResultStatus).HasMaxLength(50).IsUnicode(false).HasDefaultValue("Completed");
             e.HasIndex(x => x.EnrolmentID).IsUnique();
             e.HasOne(x => x.Enrolment).WithOne(x => x.Result).HasForeignKey<Result>(x => x.EnrolmentID).OnDelete(DeleteBehavior.Cascade);
+        });
+        model.Entity<ImageAsset>(e =>
+        {
+            e.ToTable("IMAGEASSET"); e.HasKey(x => x.ImageKey); e.Property(x => x.ImageKey).HasMaxLength(100).IsUnicode(false);
+            e.Property(x => x.ContainerName).HasMaxLength(50).IsUnicode(false).IsRequired();
+            e.Property(x => x.ContentType).HasMaxLength(100).IsUnicode(false).IsRequired();
+            e.Property(x => x.Data).HasColumnType("varbinary(max)").IsRequired();
         });
     }
 }

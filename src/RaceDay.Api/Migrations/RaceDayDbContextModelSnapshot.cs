@@ -92,6 +92,11 @@ namespace RaceDay.Api.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(50)");
 
+                    b.Property<string>("BannerBlobName")
+                        .HasMaxLength(100)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(100)");
+
                     b.Property<string>("Description")
                         .HasColumnType("varchar(max)");
 
@@ -178,6 +183,34 @@ namespace RaceDay.Api.Migrations
                     b.ToTable("EVENTCATEGORY", (string)null);
                 });
 
+            modelBuilder.Entity("RaceDay.Api.Models.ImageAsset", b =>
+                {
+                    b.Property<string>("ImageKey")
+                        .HasMaxLength(100)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<string>("ContainerName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<byte[]>("Data")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
+                    b.HasKey("ImageKey");
+
+                    b.ToTable("IMAGEASSET", (string)null);
+                });
+
             modelBuilder.Entity("RaceDay.Api.Models.Result", b =>
                 {
                     b.Property<string>("ResultID")
@@ -243,6 +276,11 @@ namespace RaceDay.Api.Migrations
                         .HasMaxLength(255)
                         .IsUnicode(false)
                         .HasColumnType("varchar(255)");
+
+                    b.Property<string>("ProfilePictureBlobName")
+                        .HasMaxLength(100)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(100)");
 
                     b.Property<string>("Role")
                         .IsRequired()
